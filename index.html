@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Ops — 韩炳诚</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f5f5f7;--surface:#fff;--border:#e5e5ea;
+    --text:#1d1d1f;--text2:#6e6e73;--text3:#aeaeb2;
+    --blue:#007aff;--green:#34c759;--orange:#ff9500;--red:#ff3b30;
+    --purple:#af52de;--teal:#5ac8fa;--indigo:#5856d6;--pink:#ff2d55;--mint:#00c7be;
+    --r:14px;--r2:10px;
+    --sh:0 1px 3px rgba(0,0,0,.06);
+    --sh2:0 4px 16px rgba(0,0,0,.08);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:100;background:rgba(245,245,247,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:48px}
+  .nb{display:flex;align-items:center;gap:10px}
+  .nb b{font-size:13px;letter-spacing:.8px;font-weight:700}
+  .nb span{font-size:12px;color:var(--text3)}
+  .nw{display:flex;align-items:center;gap:5px}
+  .nw button{background:var(--surface);border:1px solid var(--border);color:var(--text2);padding:4px 12px;border-radius:8px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+  .nw button:hover{border-color:var(--blue);color:var(--blue)}
+  .nw button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  .nw .wk{font-size:13px;color:var(--text2);min-width:140px;text-align:center;font-weight:500;font-variant-numeric:tabular-nums}
+  .nm{font-size:11px;color:var(--text3)}
+
+  .page{max-width:1000px;margin:0 auto;padding:24px 32px 100px}
+
+  /* SECTION */
+  .s{margin-bottom:36px}
+  .sh{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .sh h2{font-size:17px;font-weight:700;letter-spacing:-.2px}
+  .sh .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .sh .sub{font-size:11px;color:var(--text3);margin-left:auto;font-weight:500}
+
+  /* BANNER */
+  .banner{background:linear-gradient(135deg,#e8f4fd,#f3e8ff);border-radius:var(--r);padding:18px 22px;font-size:14px;line-height:1.8}
+  .banner b{color:var(--blue);font-weight:600}
+
+  /* METRICS */
+  .mx{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+  .mc{background:var(--surface);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);position:relative;overflow:hidden}
+  .mc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+  .mc.b::before{background:var(--blue)} .mc.g::before{background:var(--green)} .mc.o::before{background:var(--orange)} .mc.p::before{background:var(--purple)}
+  .mc .l{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+  .mc .v{font-size:26px;font-weight:700;margin:2px 0;font-variant-numeric:tabular-nums}
+  .mc .v.b{color:var(--blue)} .mc .v.g{color:var(--green)} .mc .v.o{color:var(--orange)} .mc .v.p{color:var(--purple)}
+  .mc .d{font-size:11px;color:var(--text3)}
+
+  /* LIFECYCLE LEGEND */
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);font-weight:500}
+  .leg .ld{width:10px;height:10px;border-radius:3px}
+
+  /* PROJECT CARD */
+  .pl{display:flex;flex-direction:column;gap:8px}
+  .pc{background:var(--surface);border-radius:var(--r);padding:16px 20px;box-shadow:var(--sh);transition:box-shadow .2s;display:grid;grid-template-columns:1fr auto;gap:0 16px}
+  .pc:hover{box-shadow:var(--sh2)}
+  .pc-top{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .pc-name{font-size:14px;font-weight:600}
+  .pc-owner{font-size:11px;color:var(--text3)}
+  .tag{font-size:10px;padding:3px 10px;border-radius:10px;font-weight:600;letter-spacing:.2px;margin-left:auto;flex-shrink:0;white-space:nowrap}
+  /* 生命周期颜色 */
+  .tag-plan{background:#f2f2f7;color:var(--text2)} .tag-build{background:#fff4e0;color:var(--orange)}
+  .tag-test{background:#e8f0ff;color:var(--blue)} .tag-live{background:#e8f8ee;color:var(--green)}
+  .tag-iter{background:#f3e8ff;color:var(--purple)} .tag-done{background:#e8f8ee;color:var(--mint)}
+  .tag-pause{background:#f2f2f7;color:var(--text3)}
+  .pc ul{list-style:none;grid-column:1/-1}
+  .pc li{font-size:13px;padding:3px 0 3px 16px;position:relative;line-height:1.7;list-style:none}
+  .pc li::before{content:'';position:absolute;left:0;top:11px;width:5px;height:5px;border-radius:50%;background:var(--border)}
+  .pc-next{grid-column:1/-1;font-size:12px;color:var(--text2);padding-top:8px;margin-top:6px;border-top:1px solid var(--border);display:flex;gap:6px}
+  .pc-next::before{content:'→';color:var(--orange);font-weight:700;flex-shrink:0}
+
+  /* DECISIONS */
+  .dec{background:var(--surface);border-radius:var(--r);padding:18px 22px;box-shadow:var(--sh);border-left:3px solid var(--orange)}
+  .dec h3{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .dec ul{list-style:none}
+  .dec li{font-size:13px;padding:5px 0 5px 18px;position:relative;line-height:1.7}
+  .dec li::before{content:'';position:absolute;left:2px;top:12px;width:8px;height:8px;border-radius:50%;border:2px solid var(--orange);background:transparent}
+
+  /* REVIEW */
+  .rv-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .rv{background:var(--surface);border-radius:var(--r);padding:18px 22px;box-shadow:var(--sh)}
+  .rv h3{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .rv ul{list-style:none}
+  .rv li{font-size:13px;padding:4px 0 4px 18px;position:relative;line-height:1.7}
+  .rv.wins li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:700;font-size:12px}
+  .rv.issues li::before{content:'!';position:absolute;left:1px;color:var(--orange);font-weight:700;font-size:11px}
+  .rv.lessons{grid-column:1/-1}
+  .rv.lessons li::before{content:'▸';position:absolute;left:1px;color:var(--purple);font-weight:700}
+
+  /* INSIGHT */
+  .ins{background:var(--surface);border-radius:var(--r);padding:22px 26px;box-shadow:var(--sh);border:1px dashed var(--border)}
+  .ins .qs{font-size:13px;color:var(--text2);line-height:1.85}
+  .ins .qs em{color:var(--blue);font-style:normal;font-weight:600}
+  .ins .ans{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:14px;line-height:1.85;white-space:pre-wrap}
+  .ins .ans.empty{color:var(--text3);font-style:italic}
+
+  /* RADAR */
+  .rd{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+  .rc{background:var(--surface);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);transition:all .2s;border:1px solid transparent}
+  .rc:hover{border-color:var(--teal);box-shadow:var(--sh2)}
+  .rc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+  .rc-tag{font-size:10px;padding:2px 8px;border-radius:6px;font-weight:600}
+  .rc-tag.tool{background:#e8f8f6;color:var(--teal)} .rc-tag.model{background:#f3e8ff;color:var(--purple)}
+  .rc-tag.usecase{background:#e8f8ee;color:var(--green)} .rc-tag.trend{background:#fff4e0;color:var(--orange)}
+  .rc-title{font-size:14px;font-weight:600;margin-bottom:4px}
+  .rc-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+  .rc a{font-size:12px;color:var(--blue);text-decoration:none;font-weight:500}
+  .rc a:hover{text-decoration:underline}
+  .rc-rel{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--orange);line-height:1.6}
+
+  /* HISTORY */
+  .ht{display:flex;flex-direction:column;gap:5px}
+  .hi{background:var(--surface);border-radius:var(--r2);padding:10px 16px;box-shadow:var(--sh);display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .15s;font-size:13px}
+  .hi:hover{box-shadow:var(--sh2)} .hi.now{border-left:3px solid var(--blue)}
+  .hi .wk{font-weight:600;min-width:72px;color:var(--text2);font-variant-numeric:tabular-nums;font-size:12px}
+  .hi .dt{color:var(--text3);min-width:100px;font-size:11px}
+  .hi .sm{color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hi .ar{color:var(--text3);font-size:11px}
+
+  /* BIZ LABELS */
+  .biz{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 12px;border-radius:8px;letter-spacing:.3px;margin-bottom:8px}
+  .biz-b{background:#e8f0ff;color:var(--blue)} .biz-p{background:#f3e8ff;color:var(--purple)}
+  .biz-t{background:#e8f8f6;color:var(--teal)} .biz-o{background:#fff4e0;color:var(--orange)}
+  .biz-g{background:#e8f8ee;color:var(--green)} .biz-gray{background:#f2f2f7;color:var(--text2)}
+
+  @media(max-width:768px){nav{padding:0 16px}.page{padding:16px}.mx{grid-template-columns:repeat(2,1fr)}.rv-row{grid-template-columns:1fr}.rv.lessons{grid-column:1}.pc{grid-template-columns:1fr}}
+  @media print{nav{position:static}body{background:#fff}.mc,.pc,.rv,.rc,.hi,.dec{box-shadow:none;border:1px solid #eee}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nb"><b>WEEKLY OPS</b><span>韩炳诚 · 新东方国际教育</span></div>
+  <div class="nw">
+    <button onclick="nav(-1)">‹</button>
+    <span class="wk" id="wk"></span>
+    <button onclick="nav(1)">›</button>
+    <button class="on" onclick="nav(0)" style="margin-left:4px">本周</button>
+  </div>
+  <div class="nm" id="nm"></div>
+</nav>
+<div class="page" id="page"></div>
+
+<script>
+const D={"2026-W23": {"generated": "2026-06-08 11:13", "summary": "<strong>6.02—6.08</strong> — 本周共追踪 <strong>7</strong> 个项目。重点推进PTE新题库更新、大学智能体产品开发日志撰写、A-Level知识库完成收尾。", "metrics": [{"label": "活跃项目", "value": "0", "c": "b", "detail": "本周有进展"}, {"label": "AI调研", "value": "0", "c": "p", "detail": "本周收录"}], "projects": [], "decisions": [], "review": {"wins": ["PTE题库自动化流程打通：羊驼API + 萤火虫PDF解析，含翻译提取", "产品开发日志文档完成，基于38周归档周报全面梳理", "工具链建设：lxml预编译包安装、python-docx中文字体设置等经验沉淀"], "issues": ["部分PDF解析需要针对不同格式调参（萤火虫PDF的题号格式）", "周报数据源整合还需更自动化（当前session数据手动提取）"], "lessons": ["lxml安装经常超时，用 --only-binary=:all: 获取预编译包", "python-docx设置中文字体必须用 qn('w:eastAsia') 显式指定", "不同来源的PTE题库格式差异大，需要分来源写解析器"]}, "insight": {"prompt": "这周PTE题库自动化流程终于打通了，从手动到自动是一个质变。<br>产品开发日志完成后，回头看了10个月的工作，有什么新感受？<br>下周最重要的一件事是什么？", "written": ""}, "radar": []}, "2026-W24": {"generated": "2026-06-08 11:13", "summary": "本周重点：大学智能体<b>产品开发日志</b>完成、PTE题库<b>自动化流程</b>打通、AI动画第二季脚本启动。GEO优化进入新季度方案调整期。", "metrics": [{"label": "活跃项目", "value": "12", "c": "b", "detail": "本周有进展"}, {"label": "业务线", "value": "5", "c": "g", "detail": "全覆盖"}, {"label": "AI调研", "value": "6", "c": "p", "detail": "本周收录"}], "projects": [{"name": "大学智能体", "owner": "钰佳(维护)/Bing(迭代)", "biz": "市销一体", "stage": "iter", "items": ["产品开发日志Word文档完成（43KB），梳理V1.0→V2.1完整演进脉络", "账号迁移至产研企业账号，实现自行维护", "OpenClaw脚本大范围测试，验证稳定性", "中外合办本科智能体初步跑通"], "next": "Coze商店新链接发布，测试稳定后统一发布"}, {"name": "中学智能体", "owner": "钰佳", "biz": "市销一体", "stage": "build", "items": ["济南新高一+普高持续使用中", "西安智能体搭建启动，建立标准化模型（注重维护性和交接）", "太原智能体搭建中"], "next": "西安标准化模型完成，验证可复制性"}, {"name": "中外合办本科智能体", "owner": "Bing", "biz": "市销一体", "stage": "build", "items": ["中外合办本科智能体初步跑通", "与谷老师沟通细化院校推荐逻辑"], "next": "院校推荐逻辑细化"}, {"name": "PTE机经真题系统", "owner": "—", "biz": "市销一体", "stage": "iter", "items": ["羊驼API + 萤火虫PDF解析流程打通", "本周高频22题已获取", "RS题库含翻译提取，表头格式对标原版", "按日期文件夹组织输出"], "next": "其他题型自动化更新"}, {"name": "AI讲义 / 配套资料", "owner": "邹邹", "biz": "市销一体", "stage": "done", "items": ["扩展数据库（612词/73短语/30句型）", "HTML模板系统创建完成"], "next": "新一期配套资料制作"}, {"name": "GY动画片", "owner": "邹邹", "biz": "青少动画片", "stage": "build", "items": ["第二季脚本启动，第一期完成后讨论，发现缺少贯穿主线", "第一季12集字幕审核完成", "AI完成14期故事配套资料，自动内容已实现"], "next": "第二季贯穿主线确认，9国主题脚本完成"}, {"name": "小书人IP号 / Book World", "owner": "邹邹", "biz": "青少动画片", "stage": "iter", "items": ["本周发布2期视频，播放量1884，涨粉22", "新方向选题梳理完成", "初中内容：学员中等偏上，家长关注校内成绩提升"], "next": "新选题方向确认"}, {"name": "代理商优化", "owner": "钰佳", "biz": "GEO优化", "stage": "iter", "items": ["DeepSeek端风控调整结束，排名稳步回升", "代理商新季度报价：涨价约6倍（北上广深每城市每季度约4.5万）"], "next": "新报价方案确认，低竞争词切换自优化"}, {"name": "自优化 / 发稿", "owner": "钰佳", "biz": "GEO优化", "stage": "iter", "items": ["发稿5篇（OSSD课程）", "集团公关部对接2篇（A Level + OSSD测评稿）", "扣子技能训练供分中心使用"], "next": "分中心官网发稿推广"}, {"name": "直播运营", "owner": "钰佳", "biz": "直播", "stage": "iter", "items": ["本周直播2场：老生维护 + A Level牛剑暑期营", "完成前途账号矩阵调研（抖音15+视频号14）"], "next": "投放策略优化"}, {"name": "A-Level数学知识库", "owner": "—", "biz": "其他", "stage": "done", "items": ["3412道题(2014-2026)，135知识点", "P1/P2完整版含试卷图片+词汇标注", "SQLite DB + 可视化dashboard完成"], "next": "持续维护"}], "decisions": ["GEO代理商涨价6倍 → 是否接受新报价，还是加速自优化替代方案？", "第二季动画缺少贯穿主线 → 需确认叙事方向后脚本才能继续"], "review": {"wins": ["PTE自动化流程打通：从手动到API+PDF自动解析，质变提升", "产品开发日志完成：38周归档全面梳理，形成完整演进文档", "技术问题经验沉淀：lxml预编译安装、中文字体设置"], "issues": ["第二季动画脚本缺少贯穿主线", "GEO代理商涨价幅度大，需快速切换替代方案"], "lessons": ["PDF格式解析需分来源适配，不同数据源差异大", "回溯性文档（如产品日志）的价值在于看清脉络和决策逻辑"]}, "insight": {"prompt": "PTE自动化从手动到自动是质变——这周还有什么让你觉得「终于通了」的时刻？<br>产品开发日志完成后，回看10个月迭代，最大的感受？<br>下周最重要的一件事？", "written": ""}, "radar": [{"title": "Coze（扣子）新功能追踪", "desc": "字节跳动AI Agent平台，大学智能体/中学智能体的核心平台。关注工作流升级、知识库增强、企业账号功能。", "link": "https://www.coze.cn", "tags": [{"type": "tool", "label": "核心平台"}], "relevance": "直接关系到大学智能体和中学智能体的功能迭代和维护"}, {"title": "AI搜索优化（GEO）行业动态", "desc": "豆包、DeepSeek、Kimi等AI搜索引擎的排名算法变化，新的优化策略和案例。", "link": "", "tags": [{"type": "trend", "label": "GEO趋势"}], "relevance": "GEO优化是当前核心工作之一，需要持续追踪AI搜索算法变化"}, {"title": "tastyeffectco/sandboxd", "desc": "Self-hosted dev sandboxes with preview URLs. One command. No Kubernetes, perfect for coding agents and Saas factories", "link": "https://github.com/tastyeffectco/sandboxd", "tags": [{"type": "tool", "label": "开源项目"}, {"type": "trend", "label": "⭐ 497"}], "relevance": ""}, {"title": "amElnagdy/guard-skills", "desc": "Guard skills for coding agents, quality gates that catch AI-generated failure modes in code, tests, and docs", "link": "https://github.com/amElnagdy/guard-skills", "tags": [{"type": "tool", "label": "开源项目"}, {"type": "trend", "label": "⭐ 331"}], "relevance": ""}, {"title": "razr001/align-dev", "desc": "AlignDev helps AI-assisted frontend teams generate shared coding standards and SKILL.md so Claude Code, Codex, Cursor, C", "link": "https://github.com/razr001/align-dev", "tags": [{"type": "tool", "label": "开源项目"}, {"type": "trend", "label": "⭐ 258"}], "relevance": ""}, {"title": "AI272/speaker", "desc": "Speaker is a Codex skill project for academic presentations: read real.pptx, combine text extraction, PPTX structure par", "link": "https://github.com/AI272/speaker", "tags": [{"type": "tool", "label": "开源项目"}, {"type": "trend", "label": "⭐ 119"}], "relevance": ""}]}};
+let idx=0;
+const K=Object.keys(D).sort().reverse();
+
+function wl(k){const[y,w]=k.split('-W');const d=new Date(+y,0,4);d.setDate(d.getDate()-d.getDay()+1+(+w-1)*7);const e=new Date(d);e.setDate(e.getDate()+6);const f=x=>`${x.getMonth()+1}.${x.getDate()}`;return`${f(d)} — ${f(e)}`}
+
+const STAGE={plan:'📋 规划中',build:'🔨 搭建中',test:'🧪 测试中',live:'🚀 已上线',iter:'🔄 迭代中',done:'✅ 已完成',pause:'⏸ 暂停'};
+
+function render(i){
+  if(!K.length){document.getElementById('page').innerHTML='<div style="text-align:center;padding:120px;color:var(--text3)">暂无数据</div>';return}
+  if(i<0)i=0;if(i>=K.length)i=K.length-1;idx=i;
+  const k=K[i],r=D[k];
+  document.getElementById('wk').textContent=`${k}  ${wl(k)}`;
+  document.getElementById('nm').textContent=r.generated||'';
+  let h='';
+
+  if(r.summary) h+=`<div class="banner">${r.summary}</div>`;
+
+  // Metrics
+  if(r.metrics?.length){
+    h+='<div class="mx">';
+    for(const m of r.metrics) h+=`<div class="mc ${m.c||'b'}"><div class="l">${m.label}</div><div class="v ${m.c||'b'}">${m.value}</div>${m.detail?`<div class="d">${m.detail}</div>`:''}</div>`;
+    h+='</div>';
+  }
+
+  // Lifecycle legend
+  h+='<div class="legend">';
+  for(const[s,l]of Object.entries(STAGE)) h+=`<span class="leg"><span class="ld" style="background:${s==='plan'?'var(--text3)':s==='build'?'var(--orange)':s==='test'?'var(--blue)':s==='live'?'var(--green)':s==='iter'?'var(--purple)':s==='done'?'var(--mint)':'var(--text3)'}"></span>${l}</span>`;
+  h+='</div>';
+
+  // Projects grouped by biz
+  if(r.projects?.length){
+    const BIZ_ORDER=['市销一体','青少动画片','GEO优化','直播','其他'];
+    const BIZ_CLR={市销一体:'biz-b',青少动画片:'biz-p',GEO优化:'biz-t',直播:'biz-o',其他:'biz-gray'};
+    const BIZ_ICON={市销一体:'🧠',青少动画片:'🎬',GEO优化:'🔍',直播:'📡',其他:'📌'};
+    const groups={};
+    for(const p of r.projects){const b=p.biz||'其他';if(!groups[b])groups[b]=[];groups[b].push(p)}
+
+    h+='<div class="sh"><div class="dot" style="background:var(--blue)"></div><h2>项目看板</h2><span class="sub">按业务线 · 生命周期阶段</span></div>';
+
+    for(const biz of BIZ_ORDER){
+      const projs=groups[biz];if(!projs)continue;
+      h+=`<span class="biz ${BIZ_CLR[biz]||'biz-gray'}">${BIZ_ICON[biz]||'📌'} ${biz}</span>`;
+      h+='<div class="pl">';
+      for(const p of projs){
+        const sc=p.stage||'iter';
+        h+=`<div class="pc"><div class="pc-top"><span class="pc-name">${p.name}</span><span class="pc-owner">${p.owner||''}</span><span class="tag tag-${sc}">${STAGE[sc]||sc}</span></div>`;
+        if(p.items?.length){h+='<ul>';for(const x of p.items)h+=`<li>${x}</li>`;h+='</ul>';}
+        if(p.next)h+=`<div class="pc-next">${p.next}</div>`;
+        h+='</div>';
+      }
+      h+='</div>';
+    }
+  }
+
+  // Decisions
+  if(r.decisions?.length){
+    h+='<div class="sh"><div class="dot" style="background:var(--orange)"></div><h2>需要决策</h2></div>';
+    h+=`<div class="dec"><ul>${r.decisions.map(d=>`<li>${d}</li>`).join('')}</ul></div>`;
+  }
+
+  // Review
+  if(r.review){
+    h+='<div class="sh"><div class="dot" style="background:var(--green)"></div><h2>复盘</h2></div><div class="rv-row">';
+    h+=`<div class="rv wins"><h3>✅ 做得好的</h3><ul>${(r.review.wins||[]).map(x=>`<li>${x}</li>`).join('')||'<li style="color:var(--text3)">—</li>'}</ul></div>`;
+    h+=`<div class="rv issues"><h3>⚠️ 待改进</h3><ul>${(r.review.issues||[]).map(x=>`<li>${x}</li>`).join('')||'<li style="color:var(--text3)">—</li>'}</ul></div>`;
+    h+=`<div class="rv lessons"><h3>📝 经验教训</h3><ul>${(r.review.lessons||[]).map(x=>`<li>${x}</li>`).join('')||'<li style="color:var(--text3)">—</li>'}</ul></div></div>`;
+  }
+
+  // Insight
+  h+='<div class="sh"><div class="dot" style="background:var(--purple)"></div><h2>本周心得</h2></div>';
+  const ins=r.insight||{};
+  h+=`<div class="ins"><div class="qs">${ins.prompt||'这周最让你有成就感的事是什么？<br>有什么如果重来你会换个做法？<br>下周最期待推进什么？'}</div>`;
+  h+=ins.written?`<div class="ans">${ins.written}</div>`:'<div class="ans empty">（告诉我你的本周心得，我帮你填入）</div></div>';
+
+  // Radar
+  if(r.radar?.length){
+    h+='<div class="sh"><div class="dot" style="background:var(--teal)"></div><h2>AI 调研雷达</h2><span class="sub">新工具 · 新产品 · 使用案例</span></div><div class="rd">';
+    for(const x of r.radar){
+      h+='<div class="rc"><div class="rc-tags">';
+      for(const t of(x.tags||[]))h+=`<span class="rc-tag ${t.type}">${t.label}</span>`;
+      h+=`</div><div class="rc-title">${x.title}</div><div class="rc-desc">${x.desc||''}</div>`;
+      if(x.link)h+=`<a href="${x.link}" target="_blank">了解更多 →</a>`;
+      if(x.relevance)h+=`<div class="rc-rel">💡 ${x.relevance}</div></div>`;
+    }
+    h+='</div>';
+  }
+
+  // History
+  if(K.length>1){
+    h+='<div class="sh"><div class="dot" style="background:var(--text3)"></div><h2>历史周报</h2></div><div class="ht">';
+    for(let j=0;j<K.length;j++){const kk=K[j],rr=D[kk];h+=`<div class="hi ${j===i?'now':''}" onclick="render(${j})"><span class="wk">${kk}</span><span class="dt">${wl(kk)}</span><span class="sm">${(rr.summary||'').replace(/<[^>]+>/g,'').substring(0,50)}</span><span class="ar">→</span></div>`;}
+    h+='</div>';
+  }
+
+  document.getElementById('page').innerHTML=h;
+}
+function nav(d){d===0?render(0):render(idx+d)}
+render(0);
+</script>
+</body>
+</html>
